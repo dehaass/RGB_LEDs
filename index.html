@@ -1,0 +1,115 @@
+<html>
+<head>
+<link href="favicon.ico" rel="shortcut icon" type="image/x-icon" />
+</head>
+<body><h1>Welcome to Stuart's RGB LED Site!</h1>
+
+<p>This site can be used to contol the lights in Stuart's room. Isn't that cool?</p>
+<p>Here are some options:</p>
+<p>Some colours to choose from:</p>
+
+<button onclick="sendCommand('-c', 'red')">Red</button>
+<button onclick="sendCommand('-c', 'green')">Green</button>
+<button onclick="sendCommand('-c', 'blue')">Blue</button>
+<button onclick="sendCommand('-c', 'white')">white</button>
+<button onclick="sendCommand('-c', 'turquoise')">turquoise</button>
+<button onclick="sendCommand('-c', 'purple')">purple</button>
+<button onclick="sendCommand('-c', 'yellow')">yellow</button>
+<p>Some fun little sequences:</p>
+<button onclick="sendCommand('-s', 'sea')">sea</button>
+<button onclick="sendCommand('-s', 'rgb')">RGB</button>
+<button onclick="sendCommand('-s', 'sun')">sun</button>
+<button onclick="sendCommand('-s', 'forrest')">forrest</button>
+<button onclick="sendCommand('-s', 'rainbow')">rainbow</button>
+<button onclick="sendCommand('-s', 'allCol')">all colours</button>
+<p></p>
+<button onclick="sendCommand('-s', 'wStrobe')">white strobe</button>
+<button onclick="sendCommand('-s', 'rStrobe')">red stobe</button>
+<button onclick="sendCommand('-s', 'gStrobe')">green stobe</button>
+<button onclick="sendCommand('-s', 'bStrobe')">blue stobe</button>
+<p>Go to sleep: <button onclick="sendCommand('-l', 'null')">Sleep</button></p>
+
+<p>
+Design your very own colour!<br>
+<iframe id="colDemo", src="blank.html",
+    style="display:block; visibility:visible", height="20px", width="200px" ></iframe>
+Please use a value between 0 and 255.
+<br>
+    Red:   <input id="redVal", type="number", min="0", max="255", value="255", onchange="demoColour()"><br>
+    Green: <input id="greenVal", type="number", min="0", max="255", value="255", onchange="demoColour()"><br>
+    Blue:  <input id="blueVal", type="number", min="0", max="255", value="255", onchange="demoColour()"><br><br>
+
+<button onclick="defineColour( )">Do it!</button>
+</p>
+
+
+<p></p>
+<iframe name="hidden", id="hidden", src="blank.html",
+    style="display:block; visibility:hidden" ></iframe>
+
+<script>
+function sendCommand(arg, val){
+
+    var page = document.getElementById("hidden");
+    //page.style.visibility="visible";
+    //page.style.backgroundColor=val;
+    page.src="/cgi-bin/piSite.py?" + arg + "=" + val;
+    page.onload = function (){
+        content = (page.contentWindow || page.contentDocument);
+        var error = content.error;
+        if(error != 'null'){
+            alert("I got an error: " + error);
+            return
+        }
+        if( arg == '-c'){
+            document.body.style.backgroundColor=val;
+        }else{
+            document.body.style.backgroundColor="white";
+        }
+        demoColour();
+    }
+}
+
+function defineColour(){
+    var red   = document.getElementById("redVal").value;
+    var green = document.getElementById("greenVal").value;
+    var blue  = document.getElementById("blueVal").value;
+
+    if(red > 255 || green > 255 || blue > 255 ||
+       red < 0   || green < 0   || blue < 0){
+        alert("Invalid RGB value");
+        return;
+    }
+
+    var page = document.getElementById("hidden");
+    //page.style.visibility="visible";
+    //page.style.backgroundColor=val;
+    page.src="/cgi-bin/piSite.py?-r="
+              + red + "&-g=" + green + "&-b=" + blue;
+    page.onload = function (){
+        content = (page.contentWindow || page.contentDocument);
+        var error = content.error;
+        if(error != "null"){
+            alert("I got an error: " + error);
+            return
+        }else{
+            demoColour();
+            document.body.style.backgroundColor="white";
+        }
+
+    }
+}
+
+function demoColour(){
+    var red   = document.getElementById("redVal").value;
+    var green = document.getElementById("greenVal").value;
+    var blue  = document.getElementById("blueVal").value;
+
+    var demo = document.getElementById("colDemo");
+    demo.style.backgroundColor=
+        'rgb(' + [red,green,blue].join(',') + ')';
+}
+
+</script>
+
+</body></html>
